@@ -1,74 +1,50 @@
 let tasks = [];
 
-
-if (localStorage.getItem('tasks')) {
-    tasks = JSON.parse(localStorage.getItem('tasks'));
+// Load tasks from localStorage if available
+const storedTasks = localStorage.getItem('tasks');
+if (storedTasks) {
+    tasks = JSON.parse(storedTasks);
     displayTasks();
 }
 
-document.getElementById("addTaskBtn").addEventListener("click", function() {
-    document.getElementById("taskInput").value = ""; 
-    document.getElementById("taskModal").style.display = "block";
-});
-
-document.getElementsByClassName("close")[0].addEventListener("click", function() {
-    document.getElementById("taskModal").style.display = "none";
-});
-
-document.getElementById("saveTaskBtn").addEventListener("click", function() {
-    const taskInput = document.getElementById("taskInput").value;
-    if (taskInput.trim() !== "") {
-        const task = {
-            id: Date.now(),
-            task: taskInput
-        };
-        tasks.push(task);
-        localStorage.setItem('tasks', JSON.stringify(tasks)); 
-        console.log('Task added:', task);
-        displayTasks();
-        document.getElementById("taskModal").style.display = "none";
-    } else {
-        console.log('Task input is empty');
-    }
-});
-
 function displayTasks() {
-    const taskList = document.getElementById("taskList");
+    const taskList = document.getElementById('taskList');
     taskList.innerHTML = '';
-    tasks.forEach(task => {
-        const taskCard = document.createElement("div");
-        taskCard.classList.add("task-card");
-        taskCard.innerHTML = `
-            <p>${task.task}</p>
-            <button onclick="editTask(${task.id})">Edit</button>
-            <button onclick="deleteTask(${task.id})">Delete</button>
-        `;
-        taskList.appendChild(taskCard);
+    tasks.forEach((task, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${task.name} <button onclick="editTask(${index})">Edit</button> <button onclick="deleteTask(${index})">Delete</button>`;
+        taskList.appendChild(li);
     });
 }
 
-function editTask(id) {
-    const taskToEdit = tasks.find(task => task.id === id);
-    const newTask = prompt("Edit Task:", taskToEdit.task);
-    if (newTask !== null && newTask.trim() !== "") {
-        taskToEdit.task = newTask;
-        localStorage.setItem('tasks', JSON.stringify(tasks)); 
-        console.log('Task edited:', taskToEdit);
+function addTask() {
+    const taskInput = document.getElementById('taskInput');
+    const taskName = taskInput.value.trim();
+    if (taskName !== '') {
+        tasks.push({ name: taskName });
+        saveTasks();
+        taskInput.value = '';
         displayTasks();
-    } else {
-        console.log('Task edit cancelled or empty');
     }
 }
 
-function deleteTask(id) {
-    const taskToDelete = tasks.find(task => task.id === id);
-    const confirmDelete = confirm(`Are you sure you want to delete "${taskToDelete.task}"?`);
-    if (confirmDelete) {
-        tasks = tasks.filter(task => task.id !== id);
-        localStorage.setItem('tasks', JSON.stringify(tasks)); 
-        console.log('Task deleted:', taskToDelete);
+function editTask(index) {
+    const newName = prompt('Enter new task name:', tasks[index].name);
+    if (newName !== null) {
+        tasks[index].name = newName.trim();
+        saveTasks();
         displayTasks();
-    } else {
-        console.log('Task deletion cancelled');
     }
+}
+
+function deleteTask(index) {
+    if (confirm('Are you sure you want to delete this task?')) {
+        tasks.splice(index, 1);
+        saveTasks();
+        displayTasks();
+    }
+}
+
+function saveTasks() {
+    localStorage.setItem('tasks', JSON.stringify(tasks));
 }
