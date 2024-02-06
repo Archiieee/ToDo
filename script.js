@@ -1,6 +1,6 @@
 let tasks = [];
 
-// Load tasks from localStorage if available
+
 const storedTasks = localStorage.getItem('tasks');
 if (storedTasks) {
     tasks = JSON.parse(storedTasks);
