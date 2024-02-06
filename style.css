@@ -1,0 +1,20 @@
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+}
+
+.container {
+    text-align: center;
+}
+
+.add-task-container {
+    margin-bottom: 10px;
+}
+
+.add-task-text {
+    margin-right: 10px;
+    font-weight: bold;
+}
